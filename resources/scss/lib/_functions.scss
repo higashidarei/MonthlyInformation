@@ -1,0 +1,28 @@
+@charset "utf-8";
+
+/* ----------------------------------------------------
+
+	自作関数をまとめたファイルです。
+	基本的に変更することはありません。
+	自作関数を追加したい場合、_functions_●●.scssという
+	別ファイルを生成し、追加してください。
+
+---------------------------------------------------- */
+
+@function vw-pc($size, $viewport: 1920) {
+  $rate: calc(100 / $viewport);
+
+  @return $rate * $size * 1vw;
+}
+
+@function vw-tab($size, $viewport: 768) {
+  $rate: calc(100 / $viewport);
+
+  @return $rate * $size * 1vw;
+}
+
+@function vw-sp($size, $viewport: 320) {
+  $rate: calc(100 / $viewport);
+
+  @return $rate * $size * 1vw;
+}

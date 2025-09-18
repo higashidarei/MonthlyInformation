@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+/* ----------------------------------------------------
+
+	Mixinをまとめたファイルです。
+	基本的に変更することはありません。
+	Mixinを追加したい場合、_mixin_●●.scssという
+	別ファイルを生成し、追加してください。
+
+---------------------------------------------------- */
+
+// フォントサイズ
+@mixin font-size($size) {
+  font-size: $size + px;
+  font-size: ($size / 10) + rem;
+}
+
+/* --------------------------
+	レスポンシブ関連
+-------------------------- */
+@mixin max-screen($break-point) {
+  @media screen and (max-width: $break-point) {
+    @content;
+  }
+}
+
+@mixin min-screen($break-point) {
+  @media screen and (min-width: $break-point) {
+    @content;
+  }
+}
+
+@mixin mq-max($break-point) {
+  @media screen and (max-width: $break-point) {
+    @content;
+  }
+}
+
+@mixin mq-min($break-point) {
+  @media screen and (min-width: $break-point) {
+    @content;
+  }
+}

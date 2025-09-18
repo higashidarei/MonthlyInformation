@@ -1,0 +1,402 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+/* ----------------------------------------------------
+
+	汎用クラスをまとめたファイルです。
+	基本的に変更することはありません。
+	汎用クラスを追加したい場合、_utility_●●.scssという
+	別ファイルを生成し、追加してください。
+
+	命名規則として、クラス名の頭に 
+	u-* (utilityのu)という接頭辞をつけることを推奨します。
+
+---------------------------------------------------- */
+.u-txt-bold {
+  font-weight: bold !important;
+}
+
+.u-txt-xsmall {
+  font-size: 1.2rem;
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 1rem !important;
+  }
+}
+
+.u-txt-small {
+  font-size: 1.4rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 1.2rem !important;
+  }
+}
+
+.u-txt-medium {
+  font-size: 1.8rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 1.4rem !important;
+  }
+}
+
+.u-txt-large {
+  font-size: 2rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 1.6rem !important;
+  }
+}
+
+.u-link {
+  color: g.$main-color;
+  text-decoration: underline;
+
+  @media (hover: hover) and (pointer: fine) {
+	&:hover {
+		text-decoration: none;
+	}
+}
+}
+
+.u-ul-default {
+  margin: 1em 0;
+  padding-left: 40px;
+  list-style-type: disc;
+
+  li {
+    list-style: inherit;
+  }
+}
+
+.u-ol-default {
+  margin: 1em 0;
+  padding-left: 40px;
+  list-style-type: decimal;
+
+  li {
+    list-style: inherit;
+  }
+}
+
+.u-ul-style {
+  > li {
+    position: relative;
+    padding-left: 1.3em;
+
+    &::before {
+      content: '・';
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
+  &--asterisk {
+    > li {
+      &::before {
+        content: '※';
+      }
+    }
+  }
+
+  &--disc {
+    > li {
+      &::before {
+        content: '●';
+        color: #ccc;
+      }
+    }
+  }
+
+  &--disc-red {
+    > li {
+      &::before {
+        content: '●';
+        color: g.$main-color;
+      }
+    }
+  }
+
+  &--number {
+    > li {
+      counter-increment: number;
+
+      &::before {
+        content: counter(number) '.';
+      }
+    }
+  }
+
+  &--number-red {
+    > li {
+      counter-increment: number;
+
+      &::before {
+        content: counter(number) '.';
+        color: g.$main-color;
+      }
+    }
+  }
+}
+
+.u-inline-block {
+	display: inline-block;
+}
+
+.u-align-l {
+  text-align: left !important;
+}
+
+.u-align-c {
+  text-align: center !important;
+}
+
+.u-align-r {
+  text-align: right !important;
+}
+
+@include g.max-screen(g.$bp-tab) {
+  .u-align-l-tab {
+    text-align: left !important;
+  }
+
+  .u-align-c-tab {
+    text-align: center !important;
+  }
+
+  .u-align-r-tab {
+    text-align: right !important;
+  }
+}
+
+@include g.max-screen(g.$bp-sp) {
+  .u-align-l-sp {
+    text-align: left !important;
+  }
+
+  .u-align-c-sp {
+    text-align: center !important;
+  }
+
+  .u-align-r-sp {
+    text-align: right !important;
+  }
+}
+
+.u-iframe-responsive {
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding-top: 56.25%;
+
+  iframe,
+  video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+/* --------------------------
+	padding margin 調整用
+-------------------------- */
+.u-mt-s {
+  margin-top: 2rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-top: 1rem !important;
+  }
+}
+
+.u-mt-m {
+  margin-top: 4rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-top: 2rem !important;
+  }
+}
+
+.u-mt-l {
+  margin-top: 6rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-top: 3rem !important;
+  }
+}
+
+.u-mt-xl {
+  margin-top: 8rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-top: 4rem !important;
+  }
+}
+
+.u-mb-s {
+  margin-bottom: 2rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-bottom: 1rem !important;
+  }
+}
+
+.u-mb-m {
+  margin-bottom: 4rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-bottom: 2rem !important;
+  }
+}
+
+.u-mb-l {
+  margin-bottom: 6rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-bottom: 3rem !important;
+  }
+}
+
+.u-mb-xl {
+  margin-bottom: 8rem !important;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin-bottom: 4rem !important;
+  }
+}
+
+$i: 120; // padding marginの最大値
+
+@while $i >= 0 {
+  $size: calc($i / 10);
+  .u-mt#{$i} {
+    margin-top: #{$size}rem !important;
+  }
+  .u-mb#{$i} {
+    margin-bottom: #{$size}rem !important;
+  }
+  .u-ml#{$i} {
+    margin-left: #{$size}rem !important;
+  }
+  .u-mr#{$i} {
+    margin-right: #{$size}rem !important;
+  }
+  .u-pt#{$i} {
+    padding-top: #{$size}rem !important;
+  }
+  .u-pb#{$i} {
+    padding-bottom: #{$size}rem !important;
+  }
+  .u-pl#{$i} {
+    padding-left: #{$size}rem !important;
+  }
+  .u-pr#{$i} {
+    padding-right: #{$size}rem !important;
+  }
+
+  @if $i > 80 {
+    $i: $i - 10;
+  } @else {
+    $i: $i - 5;
+  }
+}
+
+$i: 120; // padding marginの最大値
+
+@while $i >= 0 {
+  @include g.max-screen(g.$bp-tab) {
+    $size: calc($i / 10);
+    .u-mt#{$i}-tab {
+      margin-top: #{$size}rem !important;
+    }
+    .u-mb#{$i}-tab {
+      margin-bottom: #{$size}rem !important;
+    }
+    .u-ml#{$i}-tab {
+      margin-left: #{$size}rem !important;
+    }
+    .u-mr#{$i}-tab {
+      margin-right: #{$size}rem !important;
+    }
+    .u-pt#{$i}-tab {
+      padding-top: #{$size}rem !important;
+    }
+    .u-pb#{$i}-tab {
+      padding-bottom: #{$size}rem !important;
+    }
+    .u-pl#{$i}-tab {
+      padding-left: #{$size}rem !important;
+    }
+    .u-pr#{$i}-tab {
+      padding-right: #{$size}rem !important;
+    }
+  }
+
+  @if $i > 80 {
+    $i: $i - 10;
+  } @else {
+    $i: $i - 5;
+  }
+}
+
+$i: 120; // padding marginの最大値
+
+@while $i >= 0 {
+  // スマホ用
+  @include g.max-screen(g.$bp-sp) {
+    $size: calc($i / 10);
+    .u-mt#{$i}-sp {
+      margin-top: #{$size}rem !important;
+    }
+    .u-mb#{$i}-sp {
+      margin-bottom: #{$size}rem !important;
+    }
+    .u-ml#{$i}-sp {
+      margin-left: #{$size}rem !important;
+    }
+    .u-mr#{$i}-sp {
+      margin-right: #{$size}rem !important;
+    }
+    .u-pt#{$i}-sp {
+      padding-top: #{$size}rem !important;
+    }
+    .u-pb#{$i}-sp {
+      padding-bottom: #{$size}rem !important;
+    }
+    .u-pl#{$i}-sp {
+      padding-left: #{$size}rem !important;
+    }
+    .u-pr#{$i}-sp {
+      padding-right: #{$size}rem !important;
+    }
+  }
+
+  @if $i > 80 {
+    $i: $i - 10;
+  } @else {
+    $i: $i - 5;
+  }
+}
+
+/* --------------------------
+	margin マイナス調整用
+-------------------------- */
+.u-mt-70-negative {
+  margin-top: -7rem !important;
+}
+
+@include g.max-screen(g.$bp-sp) {
+  .u-mt-40-negative-sp {
+    margin-top: -4rem !important;
+  }
+}
+
+.relative {
+	position: relative;
+}
+.is-none {
+	display: none !important;
+}

@@ -1,0 +1,55 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+/* ----------------------------------------------------
+
+	JavaScriptなどの制御による状態の変化を表すスタイルの設定ファイルです。
+	汎用的なstateのスタイルをまとめています。
+	基本的には編集することはありません。
+	
+	命名規則として、クラス名の頭に 
+	is-* という接頭辞をつけることを推奨します。
+
+---------------------------------------------------- */
+
+/* --------------------------
+	レスポンシブ関係
+-------------------------- */
+// PCのみ
+.is-pc {
+  @include g.max-screen(g.$bp-tab) {
+    display: none;
+  }
+}
+
+// タブレットのみ
+.is-tab {
+  @include g.max-screen(g.$bp-sp) {
+    display: none;
+  }
+
+  @include g.min-screen(g.$bp-tab + 1) {
+    display: none;
+  }
+}
+
+// スマホのみ
+.is-sp {
+  @include g.min-screen(g.$bp-sp + 1) {
+    display: none;
+  }
+}
+
+// PC タブレットのみ
+.is-pc-tab {
+  @include g.max-screen(g.$bp-sp) {
+    display: none;
+  }
+}
+
+// タブレット スマホのみ
+.is-tab-sp {
+  @include g.min-screen(g.$bp-tab + 1) {
+    display: none;
+  }
+}

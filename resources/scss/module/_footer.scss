@@ -1,0 +1,13 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+.footer{
+  background: #555555;
+
+  &__copy{
+    font-size: 1.2rem;
+    text-align: center;
+    color: #fff;
+    padding: 1rem 0;
+  }
+}

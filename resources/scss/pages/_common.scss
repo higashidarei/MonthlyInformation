@@ -1,0 +1,52 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+section{
+  margin: 10rem 0;
+}
+
+.heading-A{
+  font-size: 3.2rem;
+  margin-bottom: 3rem;
+}
+
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.card {
+  width: calc((100% - 2rem * 2) / 3);
+
+  @media screen and (max-width: g.$bp-sp) {
+    width: calc((100% - 2rem) / 2);
+  }
+
+  &__meta {
+    display: flex;
+
+    li{
+      position: relative;
+      color: #666;
+      font-size: 1.4rem;
+      padding: 0 1rem;
+
+      &::after{
+        position: absolute;
+        content: "|";
+        right: 0;
+      }
+
+      &:first-of-type{
+        padding: 0 1rem 0 0;
+      }
+
+      &:last-of-type{
+        &::after{
+          display: none;
+        }
+      }
+    }
+  }
+}

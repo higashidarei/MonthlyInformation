@@ -1,0 +1,89 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+/* ----------------------------------------------------
+
+	レイアウト設定のファイルです。
+	レイアウトに関する汎用性の高いスタイルをまとめています。
+	基本的には編集することはありません。
+
+	命名規則として、クラス名の頭に 
+	l-* (Layoutのl)という接頭辞をつけることを推奨します。
+
+---------------------------------------------------- */
+
+.l-section {
+  margin: 8rem 0;
+
+  @include g.max-screen(g.$bp-sp) {
+    margin: 4rem 0;
+  }
+}
+
+.l-inner {
+  margin: 0 auto;
+  width: g.$inner-width;
+
+  @include g.max-screen(g.$bp-pc) {
+    width: 90%;
+  }
+
+  @include g.max-screen(g.$bp-sp) {
+	padding-left: 1.5rem !important;
+	padding-right: 1.5rem !important;
+    width: 100%;
+  }
+  &--pt {
+	padding-top: 16rem;
+	@include g.max-screen(g.$bp-sp) {
+		padding-top: 9rem;
+	}
+  }
+  &--pb {
+	padding-bottom: 12rem;
+	@include g.max-screen(g.$bp-sp) {
+		padding-bottom: 6rem;
+	}
+  }
+  &--w-full {
+	@include g.max-screen(g.$bp-sp) {
+	  padding: 0;
+	}
+  }
+  &--w-small {
+	max-width: 750px;
+  }
+}
+
+.l-flex {
+  display: flex;
+
+  &--aic {
+    align-items: center;
+  }
+}
+
+.l-pos-relative {
+  position: relative;
+}
+
+.l-pos-center {
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.l-clearfix::after {
+  clear: both;
+  content: '';
+  display: block;
+}
+
+.l-left {
+  float: left;
+}
+
+.l-right {
+  float: right;
+}

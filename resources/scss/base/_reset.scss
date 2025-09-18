@@ -1,0 +1,70 @@
+@charset "utf-8";
+
+/* ----------------------------------------------------
+
+	リセットCSS調整ファイルです。
+	リセットCSSを調整、カスタマイズしたい場合に編集します。
+
+---------------------------------------------------- */
+
+/* ====================================================
+		
+	EXAMPLES FONT-SIZE
+	------------------
+	77% = 9px
+	85% = 10px
+	93% = 11px
+	100% = 12px
+	108% = 13px
+	116% = 14px
+	124% = 15px
+	131% = 16px
+	139% = 17px
+	147% = 18px
+	154% = 19px
+	162% = 20px
+	170% = 21px
+	177% = 22px
+	185% = 23px
+	193% = 24px
+	200% = 25px
+	---------------
+	
+==================================================== */
+
+html {
+  font-size: 62.5%;
+
+  @media screen and (width <= 1024px) {
+    font-size: 52.5%;
+  }
+}
+
+body {
+  *font: x-small;
+  _font-size: 14px;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+img {
+  vertical-align: middle;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+*::before,
+*::after {
+  box-sizing: inherit;
+}

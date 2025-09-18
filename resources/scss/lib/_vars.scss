@@ -1,0 +1,56 @@
+@charset "utf-8";
+@use 'sass:math';
+
+/* ----------------------------------------------------
+
+	サイトの基本設定のファイルです。
+	最初の設定以外、基本変更することはありません。
+
+---------------------------------------------------- */
+
+/* --------------------------
+	フォントの設定
+-------------------------- */
+$font-size-px: 16; // 基本フォントサイズ
+$font-size-rem: math.div($font-size-px, 10); // 基本フォントサイズ(rem)
+$font-family: 'Noto Sans JP', 'Helvetica Neue', arial, 'Hiragino Kaku Gothic ProN',
+  'Hiragino Sans', meiryo, sans-serif;
+$font-family-anton: 'Anton', 'Noto Sans JP', 'Helvetica Neue', arial, 'Hiragino Kaku Gothic ProN',
+  'Hiragino Sans', meiryo, sans-serif;
+$font-color: #333; // 基本フォントカラー
+$line-height: 1.8; // 行間の設定
+
+/* --------------------------
+	カラーの設定
+-------------------------- */
+$main-color: #251E1C; // メインのカラー
+$sub-color: #333; // サブのカラー
+$base-color: #ffffff; // ベースのカラー (背景)
+$base-sub-color: #F1F6FA; // ベースのサブカラー (背景)
+$accent-color: #0078CE;
+
+/* --------------------------
+	レイアウトの設定
+-------------------------- */
+$inner-width: 1000px; // l-innerの横幅
+
+/* --------------------------
+	グリッドのガター
+-------------------------- */
+$grid-gutter-s: 1; // rem
+$grid-gutter-m: 2;
+$grid-gutter-l: 4;
+
+/* --------------------------
+	レスポンシブの設定
+-------------------------- */
+
+$bp-pc: 1400px; // PCのブレイクポイント
+$bp-tab: 1100px; // タブレットのブレイクポイント
+$bp-sp: 767px; // スマホのブレイクポイント
+
+/* --------------------------
+  アニメーションの設定
+-------------------------- */
+$delay-in: 0.25s;
+$delay-out: 0.5s;

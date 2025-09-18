@@ -1,0 +1,53 @@
+@charset "utf-8";
+@use '../lib/global' as g;
+
+/* ----------------------------------------------------
+
+	初期設定を行うファイルです。
+	デフォルトの設定を行う時以外、基本的に編集することはありません。
+
+---------------------------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+  font-size: 10px;
+
+  @media screen and (width <= 1100px) {
+    font-size: 0.90909vw; /* 10px / 1100px * 100 */
+  }
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 2.6667vw; /* 10px / 375px * 100 */
+  }
+}
+
+body {
+  background: g.$base-color;
+  color: g.$font-color;
+  font-size: #{g.$font-size-px}px;
+  font-size: #{g.$font-size-rem}rem;
+  font-family: g.$font-family;
+  line-height: g.$line-height;
+  overflow-x: hidden;
+
+  @include g.max-screen(g.$bp-sp) {
+    font-size: 1.4rem;
+  }
+}
+
+.wrap {
+  overflow-x: hidden;
+  position: relative;
+}
+
+img {
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+sup {
+  font-size: 50%;
+  vertical-align: super;
+}
