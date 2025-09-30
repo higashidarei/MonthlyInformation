@@ -17,7 +17,7 @@
 @section('body_class', 'page-home')
 
 @section('content')
- @include('sections._movie')
+ @include('sections._movie', ['movies' => $movies, 'month' => $month])
  @include('sections._book')
  @include('sections._exhibition')
 @endsection
