@@ -5,13 +5,13 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Models\Item;
-
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class IngestMonthly extends Command
 {
-    protected $signature = 'ingest:monthly {--month=}';
-    protected $description = 'Fetch and upsert monthly items';
+    protected $signature = 'ingest:monthly {--month=} {--months-back=2}';
+    protected $description = 'Fetch and upsert JP now_playing items within a month window';
+
     protected function http()
     {
         return \Illuminate\Support\Facades\Http::withOptions([
@@ -20,15 +20,23 @@ class IngestMonthly extends Command
         ]);
     }
 
-
     public function handle()
     {
-        $month = $this->option('month') ?? now()->format('Y-m');
-        [$y, $m] = explode('-', $month);
-        $gte = "{$y}-{$m}-01";
-        $lte = date('Y-m-t', strtotime($gte));
+        // 基準月（YYYY-MM）と遡り月数
+        $baseMonth   = $this->option('month') ?? now()->format('Y-m');
+        $monthsBack  = max(0, min((int)$this->option('months-back'), 6)); // 上限はお好みで
 
-        // 1) ジャンル辞書を取得
+        if (!preg_match('/^\d{4}-\d{2}$/', $baseMonth)) {
+            $this->error('Invalid --month format. Use YYYY-MM');
+            return Command::FAILURE;
+        }
+
+        [$y, $m] = explode('-', $baseMonth);
+        // 期間: (基準月の月初 - monthsBackヶ月) 〜 基準月の月末
+        $end   = Carbon::createFromDate((int)$y, (int)$m, 1)->endOfMonth()->endOfDay();
+        $start = (clone $end)->startOfMonth()->subMonthsNoOverflow($monthsBack)->startOfMonth();
+
+        // 1) ジャンル辞書
         $genreMap = [];
         $g = $this->http()->get('https://api.themoviedb.org/3/genre/movie/list', [
             'api_key'  => env('TMDB_API_KEY'),
@@ -36,65 +44,99 @@ class IngestMonthly extends Command
         ]);
         if ($g->successful()) {
             foreach ($g->json('genres', []) as $row) {
-                $genreMap[$row['id']] = $row['name']; // [28 => "アクション"] など
+                $genreMap[$row['id']] = $row['name'];
             }
+        } else {
+            $this->warn('ジャンル辞書の取得に失敗: '.$g->status().'（処理続行）');
         }
 
-        // 2) 今月公開映画
-        $res = $this->http()->get('https://api.themoviedb.org/3/discover/movie', [
-            'api_key'   => env('TMDB_API_KEY'),
-            'language'  => 'ja-JP',
-            'region'    => 'JP',
-            'primary_release_date.gte' => $gte,
-            'primary_release_date.lte' => $lte,
-            'sort_by' => 'primary_release_date.asc',
-            'page' => 1, // 必要なら total_pages を見てループ
-        ]);
+        // 2) 日本の上映中をページングで取得 → 期間内のみ保存
+        $this->info(sprintf(
+            'Fetching now_playing (JP) for window %s ~ %s ...',
+            $start->toDateString(), $end->toDateString()
+        ));
 
-        if ($res->successful()) {
-            foreach ($res->json('results', []) as $r) {
-                // 公開日
-                $start = $r['primary_release_date'] ?? $r['release_date'] ?? null;
+        $page = 1;
+        $totalPages = 1;
 
-                // 国（production_countries は /movie/{id} で詳細を取らないと出ないことが多いので、origin_country で代替）
-                $country = null;
-                if (!empty($r['origin_country']) && is_array($r['origin_country'])) {
-                    $country = $r['origin_country'][0] ?? null; // "JP" や "US"
+        do {
+            $np = $this->http()->get('https://api.themoviedb.org/3/movie/now_playing', [
+                'api_key'  => env('TMDB_API_KEY'),
+                'language' => 'ja-JP',
+                'region'   => 'JP',
+                'page'     => $page,
+            ]);
+
+            if (!$np->successful()) {
+                $this->error('now_playing取得失敗: '.$np->status());
+                break;
+            }
+
+            $payload    = $np->json();
+            $totalPages = max(1, (int)($payload['total_pages'] ?? 1));
+
+            foreach (($payload['results'] ?? []) as $r) {
+                $release = $r['release_date'] ?? null;
+                if (!$release || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $release)) {
+                    continue;
                 }
-                // 2文字コード→表示名が欲しければ自前マップ（最低限"JP"なら"日本"など）
-                $countryLabel = match ($country) {
+
+                $rd = Carbon::parse($release);
+                // 期間外はスキップ（＝10月基準で8〜10月等）
+                if (!$rd->betweenIncluded($start, $end)) {
+                    continue;
+                }
+
+                // 保存する month_tag は「実際の公開月」
+                $tag = $rd->format('Y-m');
+
+                $countryCode = (!empty($r['origin_country']) && is_array($r['origin_country']))
+                    ? ($r['origin_country'][0] ?? null)
+                    : null;
+
+                $countryLabel = match ($countryCode) {
                     'JP' => '日本',
                     'US' => 'アメリカ',
                     'GB' => 'イギリス',
                     'FR' => 'フランス',
                     'KR' => '韓国',
                     'CN' => '中国',
-                    default => $country, // わからなければそのままコードを表示
+                    default => $countryCode,
                 };
 
-                // ジャンル名
                 $genreNames = collect($r['genre_ids'] ?? [])
                     ->map(fn($id) => $genreMap[$id] ?? null)
                     ->filter()
-                    ->implode(', '); // "スリラー, ホラー"
+                    ->implode(', ');
 
-                \App\Models\Item::updateOrCreate(
-                    ['source' => 'tmdb', 'source_id' => (string)$r['id'], 'month_tag' => $month],
+                Item::updateOrCreate(
+                    [
+                        'source'    => 'tmdb',
+                        'source_id' => (string)$r['id'],
+                        'month_tag' => $tag, // ← 実公開月でタグ
+                    ],
                     [
                         'type'        => 'movie',
                         'title'       => $r['title'] ?? $r['original_title'] ?? '（無題）',
                         'description' => $r['overview'] ?? null,
-                        'image_url'   => !empty($r['poster_path']) ? ('https://image.tmdb.org/t/p/w500' . $r['poster_path']) : null,
-                        'detail_url'  => !empty($r['id']) ? ('https://www.themoviedb.org/movie/' . $r['id']) : null,
-                        'start_date'  => $start,
-                        'country'     => $countryLabel,     // ★ ここに保存
-                        'genre_names' => $genreNames,       // ★ ここに保存
+                        'image_url'   => !empty($r['poster_path'])
+                            ? ('https://image.tmdb.org/t/p/w500' . $r['poster_path'])
+                            : null,
+                        'detail_url'  => !empty($r['id'])
+                            ? ('https://www.themoviedb.org/movie/' . $r['id'])
+                            : null,
+                        'start_date'  => $release,
+                        'country'     => $countryLabel,
+                        'genre_names' => $genreNames,
                     ]
                 );
             }
-            $this->info("TMDb取り込みOK（国/ジャンル付与）: {$month}");
-        } else {
-            $this->error('TMDb取得失敗: ' . $res->status());
-        }
+
+            $this->info("now_playing page {$page}/{$totalPages} 取り込み完了");
+            $page++;
+        } while ($page <= $totalPages);
+
+        $this->info("取り込み完了: window {$start->toDateString()} ~ {$end->toDateString()}");
+        return Command::SUCCESS;
     }
 }
